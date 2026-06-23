@@ -1,0 +1,14 @@
+# rhu-dashboard
+
+A dashboard project for the Rural Health Unit (RHU).
+Includes disease surveillance and reporting features.
+
+## Installation
+1. Clone the repository: `git clone https://github.com/smagdangal2026/rhu-dashboard.git`
+2. Navigate to the project folder: `cd rhu-dashboard`
+3. Install dependencies: `npm install`
+
+## Usage
+Run the project locally:
+```bash
+npm start
