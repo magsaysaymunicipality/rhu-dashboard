@@ -237,9 +237,6 @@ async function renderMapAndTable(stats, disease, formattedLabel) {
         center = feature.getBounds().getCenter();
       }
 
-      // --- Compute total ---
-      const total = computeTotal(s);
-
       // --- Popup content ---
       let popupContent = `<b>${s.barangay}</b><br>Disease/Issue: ${disease}<br>`;
       if (disease.toLowerCase() === "teenage pregnancy") {
@@ -249,16 +246,24 @@ async function renderMapAndTable(stats, disease, formattedLabel) {
         popupContent += `Male: ${s.male || 0}<br>`;
         popupContent += `Female: ${s.female || 0}<br>`;
       }
+      const total = (s.male || 0) + (s.female || 0) + (s.age10_14 || 0) + (s.age15_19 || 0);
       popupContent += `Total: ${total}<br><i>Reported: ${formattedLabel}</i>`;
 
-      // --- Marker radius (bigger for mobile tap) ---
+      // --- Radius scaling (diretsong logic) ---
       let radius;
-      if (total >= 20) radius = 26;
-      else if (total >= 10) radius = 20;
-      else if (total > 0) radius = 16;
-      else radius = 12;
+      if (total >= 50) {
+        radius = 30;
+      } else if (total >= 20) {
+        radius = 24;
+      } else if (total >= 10) {
+        radius = 18;
+      } else if (total > 0) {
+        radius = 14;
+      } else {
+        radius = 10;
+      }
 
-      // --- Marker with popup ---
+      // --- Marker ---
       const marker = L.circleMarker(center, {
         radius,
         color: "purple",
