@@ -217,7 +217,6 @@ async function renderMapAndTable(stats, disease, formattedLabel) {
 
     const geoData = await geoResponse.json();
     const geoLayer = L.geoJSON(geoData).addTo(map);
-    const heatPoints = [];
 
     stats.forEach(s => {
       const normalize = str => str.replace(/^Brgy\.?\s*/i,"").trim().toLowerCase();
@@ -238,9 +237,6 @@ async function renderMapAndTable(stats, disease, formattedLabel) {
       }
 
       const total = computeTotal(s);
-      heatPoints.push([center.lat, center.lng, total]);
-
-      // --- Popup content ---
       let popupContent = `<b>${s.barangay}</b><br>Disease/Issue: ${disease}<br>`;
       if (disease.toLowerCase() === "teenage pregnancy") {
         popupContent += `10–14 y/o: ${s.age10_14 || 0}<br>`;
@@ -251,7 +247,6 @@ async function renderMapAndTable(stats, disease, formattedLabel) {
       }
       popupContent += `Total: ${total}<br><i>Reported: ${formattedLabel}</i>`;
 
-      // --- Marker ---
       let radius;
       if (total >= 20) radius = 22;
       else if (total >= 10) radius = 16;
@@ -267,18 +262,11 @@ async function renderMapAndTable(stats, disease, formattedLabel) {
       }).addTo(map);
 
       marker.bindPopup(popupContent);
-
-      // Event handlers para sa lahat ng device
       marker.on("click", () => marker.openPopup());
       marker.on("tap", () => marker.openPopup());
       marker.on("touchstart", () => marker.openPopup());
       marker.on("touchend", () => marker.openPopup());
     });
-
-    // --- Heatmap layer (background) ---
-    if (heatPoints.length > 0) {
-      L.heatLayer(heatPoints, { radius: 25, blur: 15 }).addTo(map);
-    }
 
     renderTable(stats, disease, formattedLabel);
 
