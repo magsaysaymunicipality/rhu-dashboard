@@ -229,7 +229,6 @@ async function renderMapAndTable(stats, disease, formattedLabel) {
         return;
       }
 
-      // --- Center point ---
       let center;
       if (feature.feature.geometry.type === "Point") {
         const [lng, lat] = feature.feature.geometry.coordinates;
@@ -238,7 +237,6 @@ async function renderMapAndTable(stats, disease, formattedLabel) {
         center = feature.getBounds().getCenter();
       }
 
-      // --- Popup content ---
       const total = computeTotal(s);
       let popupContent = `<b>${s.barangay}</b><br>Disease/Issue: ${disease}<br>`;
 
@@ -252,12 +250,11 @@ async function renderMapAndTable(stats, disease, formattedLabel) {
 
       popupContent += `Total: ${total}<br><i>Reported: ${formattedLabel}</i>`;
 
-      // --- Radius categorical sizing ---
       let radius;
-      if (total >= 20) radius = 22;   // High
-      else if (total >= 10) radius = 16;   // Medium
-      else if (total > 0) radius = 12;    // Low
-      else radius = 8;    // None
+      if (total >= 20) radius = 22;
+      else if (total >= 10) radius = 16;
+      else if (total > 0) radius = 12;
+      else radius = 8;
 
       const marker = L.circleMarker(center, {
         radius: radius,
@@ -267,11 +264,11 @@ async function renderMapAndTable(stats, disease, formattedLabel) {
         interactive: true
       }).addTo(map);
 
-      // Bind popup for desktop + mobile
       marker.bindPopup(popupContent);
       marker.on("click", () => marker.openPopup());
       marker.on("tap", () => marker.openPopup());
       marker.on("touchstart", () => marker.openPopup());
+      marker.on("touchend", () => marker.openPopup());
 
       heatPoints.push([center.lat, center.lng, total]);
     });
