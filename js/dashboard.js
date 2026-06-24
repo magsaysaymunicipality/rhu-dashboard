@@ -259,10 +259,10 @@ async function renderMapAndTable(stats, disease, formattedLabel) {
 
       // --- Circle overlay (semi-transparent, no popup) ---
       L.circleMarker(center, {
-        radius: total >= 50 ? 20 : total >= 20 ? 15 : total >= 10 ? 10 : 6,
+        radius: total >= 30 ? 40 : total >= 20 ? 30 : total >= 10 ? 15 : 8,
         color: "purple",
         fillColor: "violet",
-        fillOpacity: 0.3,
+        fillOpacity: 0.7,
         interactive: false
       }).addTo(map);
 
@@ -272,7 +272,7 @@ async function renderMapAndTable(stats, disease, formattedLabel) {
 
     // --- Heatmap layer (background) ---
     if (heatPoints.length > 0) {
-      const heatLayer = L.heatLayer(heatPoints, { radius: 25, blur: 15, maxZoom: 17 });
+      const heatLayer = L.heatLayer(heatPoints, { radius: 20, blur: 10, maxZoom: 17 });
       heatLayer.addTo(map);
       heatLayer.bringToBack(); // siguradong nasa ilalim
     }
