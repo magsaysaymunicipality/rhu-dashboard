@@ -259,7 +259,7 @@ async function renderMapAndTable(stats, disease, formattedLabel) {
 
       // --- Circle overlay (semi-transparent, no popup) ---
       L.circleMarker(center, {
-        radius: total >= 30 ? 40 : total >= 20 ? 30 : total >= 10 ? 15 : 8,
+        radius: total >= 30 ? 25 : total >= 20 ? 20 : total >= 10 ? 15 : 8,
         color: "purple",
         fillColor: "violet",
         fillOpacity: 0.7,
