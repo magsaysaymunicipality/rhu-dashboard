@@ -257,29 +257,16 @@ async function renderMapAndTable(stats, disease, formattedLabel) {
       // --- Add to heatmap points ---
       heatPoints.push([center.lat, center.lng, total]);
 
-      // --- Circle marker (interactive, above heatmap) ---
-      const radius = total >= 50 ? 30 : total >= 20 ? 24 : total >= 10 ? 18 : total > 0 ? 14 : 10;
-      const circle = L.circleMarker(center, {
-        radius,
-        color: "purple",
-        fillColor: "violet",
-        fillOpacity: 0.7,
-        interactive: true
-      }).addTo(map);
-
-      circle.bindPopup(popupContent);
-
-      // --- Event handlers for desktop + mobile ---
-      circle.on("click", () => circle.openPopup());
-      circle.on("touchstart", () => circle.openPopup());
-      circle.on("touchend", () => circle.openPopup());
+      // --- Pin marker (dito naka-bind ang popup) ---
+      const marker = L.marker(center).addTo(map);
+      marker.bindPopup(popupContent);
     });
 
-    // --- Heatmap layer (added first, background) ---
+    // --- Heatmap layer (background only) ---
     if (heatPoints.length > 0) {
       const heatLayer = L.heatLayer(heatPoints, { radius: 25, blur: 15, maxZoom: 17 });
       heatLayer.addTo(map);
-      heatLayer.bringToBack(); // siguradong nasa ilalim
+      heatLayer.bringToBack();
     }
 
     // --- Table rendering ---
