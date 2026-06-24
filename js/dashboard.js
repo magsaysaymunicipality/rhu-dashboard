@@ -240,7 +240,7 @@ async function renderMapAndTable(stats, disease, formattedLabel) {
         center = feature.getBounds().getCenter();
       }
 
-      // --- Compute total ---
+      // --- Compute total cases ---
       const total = (s.male || 0) + (s.female || 0) + (s.age10_14 || 0) + (s.age15_19 || 0);
 
       // --- Popup content ---
@@ -257,16 +257,24 @@ async function renderMapAndTable(stats, disease, formattedLabel) {
       // --- Add to heatmap points ---
       heatPoints.push([center.lat, center.lng, total]);
 
+      // --- Circle overlay (semi-transparent, no popup) ---
+      L.circleMarker(center, {
+        radius: total >= 50 ? 20 : total >= 20 ? 15 : total >= 10 ? 10 : 6,
+        color: "purple",
+        fillColor: "violet",
+        fillOpacity: 0.3,
+        interactive: false
+      }).addTo(map);
+
       // --- Pin marker (dito naka-bind ang popup) ---
-      const marker = L.marker(center).addTo(map);
-      marker.bindPopup(popupContent);
+      L.marker(center).addTo(map).bindPopup(popupContent);
     });
 
-    // --- Heatmap layer (background only) ---
+    // --- Heatmap layer (background) ---
     if (heatPoints.length > 0) {
       const heatLayer = L.heatLayer(heatPoints, { radius: 25, blur: 15, maxZoom: 17 });
       heatLayer.addTo(map);
-      heatLayer.bringToBack();
+      heatLayer.bringToBack(); // siguradong nasa ilalim
     }
 
     // --- Table rendering ---
