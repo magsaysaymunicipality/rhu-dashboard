@@ -181,6 +181,10 @@ nav {
   background-color: #1976d2;
 }
 
+.leaflet-interactive {
+  pointer-events: visiblePainted;
+}
+
 /* === Responsive Adjustments === */
 @media (max-width: 768px) {
   .map-container {
