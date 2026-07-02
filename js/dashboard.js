@@ -60,9 +60,9 @@ function resetStats() {
 
 // === Utility ===
 function computeTotal(entry) {
+  if (entry.total !== undefined) return entry.total;
   return (entry.age10_14 || 0) + (entry.age15_19 || 0) +
-         (entry.male || 0) + (entry.female || 0) +
-         (entry.total || 0);
+         (entry.male || 0) + (entry.female || 0);
 }
 
 // === Load Data (Monthly or Annual) ===
@@ -117,22 +117,78 @@ async function loadData(year, month, disease, type = "monthly") {
     document.querySelector("#trend .section-title").textContent =
       `Yearly Overview (${disease} – ${year})`;
 
-    // Bar Chart
-    casesChart.data.labels = stats.map(s => s.barangay);
-    let datasets = [];
-    if (stats.some(s => s.age10_14 !== undefined || s.age15_19 !== undefined)) {
-      datasets.push({ label:`10–14 y/o – ${formattedLabel}`, data:stats.map(s=>s.age10_14||0), backgroundColor:"#2196f3" });
-      datasets.push({ label:`15–19 y/o – ${formattedLabel}`, data:stats.map(s=>s.age15_19||0), backgroundColor:"#4caf50" });
-    } else if (stats.some(s => s.male !== undefined || s.female !== undefined)) {
-      datasets.push({ label:`Male – ${formattedLabel}`, data:stats.map(s=>s.male||0), backgroundColor:"#2196f3" });
-      datasets.push({ label:`Female – ${formattedLabel}`, data:stats.map(s=>s.female||0), backgroundColor:"#e91e63" });
-    } else {
-      datasets.push({ label:`Total Cases – ${formattedLabel}`, data:stats.map(s=>s.total||computeTotal(s)), backgroundColor:"#9c27b0" });
-    }
-    casesChart.data.datasets = datasets;
-    casesChart.options.scales.x.title.text = `Barangays – ${formattedLabel}`;
-    casesChart.options.scales.y.title.text = `Cases – ${formattedLabel}`;
-    casesChart.update();
+// === Bar Chart ===
+casesChart.data.labels = stats.map(s => s.barangay);
+
+let datasets = [];
+if (stats.some(s => s.age10_14 !== undefined || s.age15_19 !== undefined)) {
+  datasets.push({
+    label: `10–14 y/o – ${formattedLabel}`,
+    data: stats.map(s => s.age10_14 || 0),
+    backgroundColor: "#42a5f5"
+  });
+  datasets.push({
+    label: `15–19 y/o – ${formattedLabel}`,
+    data: stats.map(s => s.age15_19 || 0),
+    backgroundColor: "#66bb6a"
+  });
+} else if (stats.some(s => s.male !== undefined || s.female !== undefined)) {
+  datasets.push({
+    label: `Male – ${formattedLabel}`,
+    data: stats.map(s => s.male || 0),
+    backgroundColor: "#1e88e5"
+  });
+  datasets.push({
+    label: `Female – ${formattedLabel}`,
+    data: stats.map(s => s.female || 0),
+    backgroundColor: "#d81b60"
+  });
+} else {
+  datasets.push({
+    label: `Total Cases – ${formattedLabel}`,
+    data: stats.map(s => computeTotal(s)),
+    backgroundColor: "#8e24aa"
+  });
+}
+
+casesChart.data.datasets = datasets;
+casesChart.options.scales.x.title.text = `Barangays – ${formattedLabel}`;
+casesChart.options.scales.y.title.text = `Cases – ${formattedLabel}`;
+
+// 👉 Responsive ticks config (Mayor’s Dashboard style)
+casesChart.options.scales.x.ticks = {
+  autoSkip: false,
+  maxRotation: 25,
+  minRotation: 0,
+  font: ctx => {
+    const w = window.innerWidth;
+    if (w < 480) return { size: 9 };   // phones
+    if (w < 1024) return { size: 11 }; // tablets
+    return { size: 14 };               // desktops
+  },
+  callback: function(value) {
+    const label = this.getLabelForValue(value);
+    return label.length > 12 ? label.slice(0, 12) + "…" : label;
+  }
+};
+
+casesChart.options.scales.y.ticks = {
+  font: ctx => {
+    const w = window.innerWidth;
+    if (w < 480) return { size: 9 };
+    if (w < 1024) return { size: 11 };
+    return { size: 14 };
+  }
+};
+
+// 👉 Styling para mas malinis
+casesChart.options.scales.y.grid = { color: "rgba(0,0,0,0.05)" };
+casesChart.options.scales.x.grid = { display: false };
+casesChart.options.layout = { padding: { left: 10, right: 10, top: 20, bottom: 20 } };
+casesChart.options.maintainAspectRatio = false;
+
+casesChart.update();
+
     // --- Line Chart (Yearly Overview) ---
     if (type === "monthly") {
       const monthNamesShort = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
@@ -180,6 +236,7 @@ async function loadData(year, month, disease, type = "monthly") {
         { label: `${disease} Cases – Annual Comparison`, data: yearlyTotals, borderColor:"#ff5722", fill:false }
       ];
     }
+
     trendChart.options.scales.y.title.text = `Total Cases – ${year}`;
     trendChart.update();
 
@@ -190,22 +247,19 @@ async function loadData(year, month, disease, type = "monthly") {
     // --- Map + Table ---
     await renderMapAndTable(stats, disease, formattedLabel);
 
-    // --- Legend ---
+    // --- Legend removed ---
     const legendDiv = document.getElementById("legend");
-    legendDiv.style.display = "flex";
-    legendDiv.innerHTML = `
-      <div class="item"><div class="color-box" style="background-color:#ff9999;"></div> High (≥20)</div>
-      <div class="item"><div class="color-box" style="background-color:#fff799;"></div> Medium (10–19)</div>
-      <div class="item"><div class="color-box" style="background-color:#b3ffb3;"></div> Low (1–9)</div>
-      <div class="item"><div class="color-box" style="background-color:#e0e0e0;"></div> None (0)</div>
-    `;
-  } catch(err) {
+    legendDiv.style.display = "none";
+    legendDiv.innerHTML = "";
+
+  } catch (err) {
     console.error("Data load error:", err);
     showAlert(err.message || "Error loading data");
     resetStats();
   }
 }
 
+// === Map + Table Rendering ===
 async function renderMapAndTable(stats, disease, formattedLabel) {
   try {
     const geoResponse = await fetch("./data/geolocation.geojson");
@@ -218,11 +272,10 @@ async function renderMapAndTable(stats, disease, formattedLabel) {
     const geoData = await geoResponse.json();
     const geoLayer = L.geoJSON(geoData).addTo(map);
 
-    // --- Collect heatmap points ---
     const heatPoints = [];
 
     stats.forEach(s => {
-      const normalize = str => str.replace(/^Brgy\.?\s*/i,"").trim().toLowerCase();
+      const normalize = str => str.replace(/^Brgy\.?\s*/i, "").trim().toLowerCase();
       const feature = geoLayer.getLayers().find(
         l => normalize(l.feature.properties.name) === normalize(s.barangay)
       );
@@ -231,7 +284,6 @@ async function renderMapAndTable(stats, disease, formattedLabel) {
         return;
       }
 
-      // --- Center point ---
       let center;
       if (feature.feature.geometry.type === "Point") {
         const [lng, lat] = feature.feature.geometry.coordinates;
@@ -240,10 +292,8 @@ async function renderMapAndTable(stats, disease, formattedLabel) {
         center = feature.getBounds().getCenter();
       }
 
-      // --- Compute total cases ---
-      const total = (s.male || 0) + (s.female || 0) + (s.age10_14 || 0) + (s.age15_19 || 0);
+      const total = computeTotal(s);
 
-      // --- Popup content ---
       let popupContent = `<b>${s.barangay}</b><br>Disease/Issue: ${disease}<br>`;
       if (disease.toLowerCase() === "teenage pregnancy") {
         popupContent += `10–14 y/o: ${s.age10_14 || 0}<br>`;
@@ -254,10 +304,8 @@ async function renderMapAndTable(stats, disease, formattedLabel) {
       }
       popupContent += `Total: ${total}<br><i>Reported: ${formattedLabel}</i>`;
 
-      // --- Add to heatmap points ---
       heatPoints.push([center.lat, center.lng, total]);
 
-      // --- Circle overlay (semi-transparent, no popup) ---
       L.circleMarker(center, {
         radius: total >= 30 ? 25 : total >= 20 ? 20 : total >= 10 ? 15 : 8,
         color: "purple",
@@ -266,23 +314,20 @@ async function renderMapAndTable(stats, disease, formattedLabel) {
         interactive: false
       }).addTo(map);
 
-      // --- Pin marker (dito naka-bind ang popup) ---
       L.marker(center).addTo(map).bindPopup(popupContent);
     });
 
-    // --- Heatmap layer (background) ---
     if (heatPoints.length > 0) {
       const heatLayer = L.heatLayer(heatPoints, { radius: 20, blur: 10, maxZoom: 17 });
       heatLayer.addTo(map);
-      heatLayer.bringToBack(); // siguradong nasa ilalim
+      heatLayer.bringToBack();
     }
 
-    // --- Table rendering ---
     renderTable(stats, disease, formattedLabel);
 
   } catch (err) {
     console.error("Map/Table render error:", err);
-    renderTable(stats, disease, formattedLabel); // fallback
+    renderTable(stats, disease, formattedLabel);
   }
 }
 
@@ -294,10 +339,6 @@ function renderTable(stats, disease, formattedLabel) {
     const total = computeTotal(s);
     const row = document.createElement("tr");
     row.innerHTML = `<td>${disease}</td><td>${s.barangay}</td><td>${total}</td>`;
-    if (total >= 20) row.style.backgroundColor = "#ff9999";
-    else if (total >= 10) row.style.backgroundColor = "#fff799";
-    else if (total > 0) row.style.backgroundColor = "#b3ffb3";
-    else row.style.backgroundColor = "#e0e0e0";
     tbody.appendChild(row);
   });
 }
