@@ -135,14 +135,6 @@ footer {
   font-size: 0.95rem;
 }
 
-/* === Navigation === */
-nav {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  font-size: 0.95rem;
-}
-
 /* === Legend === */
 #legend {
   display: flex;
@@ -176,7 +168,7 @@ nav {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  font-size: 1rem; /* base size */
+  font-size: 0.95rem;
 }
 
 nav a {
@@ -214,9 +206,9 @@ nav a.active {
 }
 
 @media (max-width: 768px) {
+  nav { gap: 6px; font-size: 0.75rem; }
   body { font-size: 0.9rem; }
   .section-title { font-size: 1.2rem; }
-  nav { font-size: 0.9rem; }
   .chart-wrapper { height: 300px; width: 100%; }
   #casesChart, #trendChart { font-size: 0.85rem; padding: 0; }
   footer { padding: 6px; font-size: 0.8rem; }
@@ -224,9 +216,9 @@ nav a.active {
 }
 
 @media (max-width: 480px) {
+  nav { gap: 6px; font-size: 0.75rem; }
   body { font-size: 0.85rem; }
   .section-title { font-size: 1.1rem; }
-  nav { font-size: 0.85rem; }
   .chart-wrapper { height: 300px; width: 100%; }
   #casesChart, #trendChart { font-size: 0.8rem; padding: 0; }
   footer { padding: 6px; font-size: 0.8rem; }
