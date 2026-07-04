@@ -60,12 +60,38 @@ main { padding: 20px; font-size: 1rem; }
 
 /* === Filters === */
 .filters {
-  margin-bottom: 15px;
   display: flex;
-  gap: 15px;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.filter-group {
+  display: flex;
   align-items: center;
-  font-size: 0.95rem;
+  gap: 6px;
+}
+
+.filter-group label {
+  white-space: nowrap;
+  font-weight: bold;
+}
+
+.filter-group select,
+.filter-group input[type="month"] {
+  flex: 0 0 auto;
+  width: 140px;       /* default width sa desktop/laptop */
+  padding: 4px 6px;
+  font-size: 14px;
+}
+
+#diseaseFilter {
+  width: 180px;       /* mas malapad para kasya ang Teenage Pregnancy */
+  max-width: 220px;   /* optional limit */
+}
+
+.filter-row {
+  display: flex;
+  gap: 20px;
 }
 
 /* === Map & Charts === */
@@ -196,6 +222,7 @@ nav a:hover, nav a.active { background: #e0f2f1; }
   footer { padding: 10px; font-size: 0.85rem; }
   table { font-size: 0.85rem; }
 }
+
 @media (max-width: 768px) {
   body { font-size: 0.9rem; }
   .section-title { font-size: 1.2rem; }
@@ -203,12 +230,54 @@ nav a:hover, nav a.active { background: #e0f2f1; }
   .chart-wrapper { height: 300px; }
   footer { padding: 6px; font-size: 0.8rem; }
   table { font-size: 0.8rem; }
+  .filter-row {
+    flex-direction: row;     /* isang linya lang */
+    justify-content: space-between;
+    gap: 10px;               /* mas maliit na gap */
+  }
+
+  .filter-group select,
+  .filter-group input[type="month"] {
+    width: 100px;            /* mas maliit na lapad sa mobile */
+    font-size: 12px;
+    padding: 2px 4px;
+  }
+
+  #diseaseFilter {
+    width: 140px;            /* mas malapad pa rin para kasya ang Teenage Pregnancy */
+  }
 }
+
 @media (max-width: 480px) {
   body { font-size: 0.85rem; }
   .section-title { font-size: 1.1rem; }
   nav { gap: 6px; font-size: 0.75rem; }
-  .chart-wrapper { height: 300px; }
+  .chart-wrapper { height: 280px; } /* medyo mas maliit pa */
   footer { padding: 6px; font-size: 0.8rem; }
   table { font-size: 0.8rem; }
+
+  /* Filters row: isang linya lang */
+  .filter-row {
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 8px; /* mas maliit na gap */
+  }
+
+  /* Default selectors sa mobile */
+  .filter-group select,
+  .filter-group input[type="month"] {
+    width: 95px;       /* mas maliit na lapad */
+    font-size: 12px;
+    padding: 2px 4px;
+  }
+
+  /* Report Type mas maliit pa */
+  #reportType {
+    width: 80px;
+  }
+
+  /* Disease selector mas malapad para kasya ang Teenage Pregnancy */
+  #diseaseFilter {
+    width: 140px;
+  }
 }

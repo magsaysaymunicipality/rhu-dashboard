@@ -366,12 +366,25 @@ if (defaultYear && defaultDisease) {
 // === Event Listeners ===
 document.getElementById("reportType").addEventListener("change", e => {
   const type = e.target.value;
-  if (type === "annual") {
-    document.getElementById("yearSelector").style.display = "inline-block";
-    document.getElementById("dateRange").style.display = "none";
+  const yearGroup = document.getElementById("yearGroup");
+  const monthGroup = document.getElementById("monthGroup");
+  const dateRange = document.getElementById("dateRange");
+
+  if (type === "monthly") {
+    yearGroup.style.display = "none";
+    monthGroup.style.display = "flex";
+    const now = new Date();
+    const yyyy = now.getFullYear();
+    const mm = String(now.getMonth() + 1).padStart(2, '0');
+    dateRange.value = `${yyyy}-${mm}`;
+    const disease = document.getElementById("diseaseFilter").value;
+    if (disease) loadData(yyyy, mm, disease, "monthly");
   } else {
-    document.getElementById("yearSelector").style.display = "none";
-    document.getElementById("dateRange").style.display = "inline-block";
+    yearGroup.style.display = "flex";
+    monthGroup.style.display = "none";
+    const year = document.getElementById("yearSelector").value;
+    const disease = document.getElementById("diseaseFilter").value;
+    if (year && disease) loadData(year, null, disease, "annual");
   }
 });
 
@@ -397,4 +410,14 @@ document.getElementById("yearSelector").addEventListener("change", e => {
   const year = e.target.value;
   const disease = document.getElementById("diseaseFilter").value;
   if (year && disease) loadData(year, null, disease, "annual");
+});
+
+// === Scroll-to-top button ===
+const scrollBtn = document.getElementById("scrollTopBtn");
+window.addEventListener("scroll", () => {
+  const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+  scrollBtn.style.display = scrollTop > 200 ? "block" : "none";
+});
+scrollBtn.addEventListener("click", () => {
+  window.scrollTo({ top: 0, behavior: "smooth" });
 });

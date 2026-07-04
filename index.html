@@ -15,37 +15,44 @@
       <img src="images/logo2.jpg" alt="Logo" class="logo">
       <span class="tagline">RHU Magsaysay - Health Issues and Diseases Surveillance Dashboard</span>
     </div>
+
+    <!-- Filters -->
     <div class="filters">
       <!-- Disease selector -->
-      <label for="diseaseFilter">Health Condition / Disease:</label>
-      <select id="diseaseFilter">
-	<optgroup label="Diseases">
-  	   <option value="Hypertension">Hypertension</option>
-  	   <option value="Type II Diabetes">Type II Diabetes</option>
-	</optgroup>
-	<optgroup label="Conditions">
-  	   <option value="Teenage Pregnancy">Teenage Pregnancy</option>
-	</optgroup>
+      <div class="filter-group">
+        <label for="diseaseFilter">Health Condition / Disease:</label>
+        <select id="diseaseFilter">
+          <optgroup label="Diseases">
+            <option value="Hypertension">Hypertension</option>
+            <option value="Type II Diabetes">Type II Diabetes</option>
+          </optgroup>
+          <optgroup label="Conditions">
+            <option value="Teenage Pregnancy">Teenage Pregnancy</option>
+          </optgroup>
+        </select>
+      </div>
 
-      </select>
-
-      <!-- Report type selector -->
-      <label for="reportType">Report Type:</label>
-      <select id="reportType">
-        <option value="annual" selected>Annual</option>
-        <option value="monthly">Monthly</option>
-      </select>
-
-      <!-- Annual year-only selector -->
-      <label for="yearSelector">Year:</label>
-      <select id="yearSelector">
-        <option value="2026">2026</option>
-        <option value="2025">2025</option>
-      </select>
-
-      <!-- Monthly month/year picker (hidden by default) -->
-      <label for="dateRange" style="display:none;">Month/Year:</label>
-      <input type="month" id="dateRange" style="display:none;">
+      <!-- Report Type + Year + Month/Year in one row -->
+      <div class="filter-row">
+        <div class="filter-group">
+          <label for="reportType">Report Type:</label>
+          <select id="reportType">
+            <option value="annual" selected>Annual</option>
+            <option value="monthly">Monthly</option>
+          </select>
+        </div>
+        <div class="filter-group" id="yearGroup">
+          <label for="yearSelector">Year:</label>
+          <select id="yearSelector">
+            <option value="2026">2026</option>
+            <option value="2025">2025</option>
+          </select>
+        </div>
+        <div class="filter-group" id="monthGroup" style="display:none;">
+          <label for="dateRange">Month/Year:</label>
+          <input type="month" id="dateRange">
+        </div>
+      </div>
     </div>
 
     <div id="alertBox">⚠️ Please select a disease and date to view data</div>
@@ -62,6 +69,7 @@
       <div class="card"><h3>Last Reported</h3><h4 id="lastUpdate">---</h4></div>
     </div>
   </section>
+
   <section id="mapSection" class="dashboard-section">
     <h2 class="section-title">Cases Map</h2>
     <div id="brgyMap" class="map-container"></div>
@@ -77,29 +85,30 @@
     <div class="chart-wrapper"><canvas id="trendChart"></canvas></div>
   </section>
 
-<section id="recentCases" class="dashboard-section">
-  <h2 class="section-title">Recent Cases</h2>
-  <div class="table-wrapper">
-    <table id="directory-table">
-      <thead>
-        <tr>
-          <th>Disease</th>
-          <th>Barangay</th>
-          <th>Cases</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
-
-  <!-- Legend placeholder -->
-  <div id="legend" style="display:none;"></div>
-</section>
+  <section id="recentCases" class="dashboard-section">
+    <h2 class="section-title">Recent Cases</h2>
+    <div class="table-wrapper">
+      <table id="directory-table">
+        <thead>
+          <tr>
+            <th>Disease</th>
+            <th>Barangay</th>
+            <th>Cases</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div id="legend" style="display:none;"></div>
+  </section>
 </main>
 
 <footer>
   <p>&copy; 2026 Municipality of Magsaysay. All rights reserved.</p>
 </footer>
+
+<!-- Scroll-to-top button -->
+<button id="scrollTopBtn" class="scroll-top">⬆ Back to Top</button>
 
 <!-- JS Libraries -->
 <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -107,26 +116,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <!-- Custom JS -->
-<script src="js/dashboard.obf.js"></script>
+<script src="js/dashboard-obf.js"></script>
 
-<!-- Scroll-to-top button -->
-<button id="scrollTopBtn" class="scroll-top">⬆ Back to Top</button>
-
-<!-- Scroll-to-top script -->
-<script>
-  // Show button only when scrolled down
-  window.addEventListener("scroll", () => {
-    const btn = document.getElementById("scrollTopBtn");
-    if (document.documentElement.scrollTop > 200) {
-      btn.style.display = "block";
-    } else {
-      btn.style.display = "none";
-    }
-  });
-// Smooth scroll to top
-  document.getElementById("scrollTopBtn").addEventListener("click", () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  });
-</script>
 </body>
 </html>
