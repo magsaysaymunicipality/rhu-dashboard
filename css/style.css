@@ -61,8 +61,18 @@ main { padding: 20px; font-size: 1rem; }
 /* === Filters === */
 .filters {
   display: flex;
-  flex-direction: column;
-  gap: 12px;
+  flex-direction: row;   /* ✅ row layout */
+  gap: 20px;             /* space between groups */
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;       /* para safe kung sobrang sikip */
+}
+
+.filter-row {
+  display: flex;
+  flex-direction: row;   /* ✅ row layout */
+  gap: 20px;
+  align-items: center;
 }
 
 .filter-group {
@@ -87,11 +97,6 @@ main { padding: 20px; font-size: 1rem; }
 #diseaseFilter {
   width: 180px;       /* mas malapad para kasya ang Teenage Pregnancy */
   max-width: 220px;   /* optional limit */
-}
-
-.filter-row {
-  display: flex;
-  gap: 20px;
 }
 
 /* === Map & Charts === */
@@ -224,27 +229,43 @@ nav a:hover, nav a.active { background: #e0f2f1; }
 }
 
 @media (max-width: 768px) {
-  body { font-size: 0.9rem; }
-  .section-title { font-size: 1.2rem; }
+  body { font-size: 0.85rem; }
+  .section-title { font-size: 1.1rem; }
   nav { gap: 6px; font-size: 0.75rem; }
-  .chart-wrapper { height: 300px; }
+  .chart-wrapper { height: 280px; }
   footer { padding: 6px; font-size: 0.8rem; }
   table { font-size: 0.8rem; }
+
+  /* Filters row: payagan mag-wrap kung di kasya */
   .filter-row {
-    flex-direction: row;     /* isang linya lang */
+    flex-direction: row;
+    flex-wrap: wrap;          /* ✅ para hindi lumampas, lilipat sa next line */
     justify-content: space-between;
-    gap: 10px;               /* mas maliit na gap */
+    gap: 8px;
   }
 
+  /* Default selectors sa mobile */
   .filter-group select,
   .filter-group input[type="month"] {
-    width: 100px;            /* mas maliit na lapad sa mobile */
+    width: auto;              /* ✅ responsive width */
+    min-width: 95px;          /* minimum size */
+    max-width: 100%;          /* huwag lumampas sa parent */
     font-size: 12px;
     padding: 2px 4px;
+    flex: 0 0 auto;           /* ✅ huwag mag-expand beyond content */
+    overflow: hidden;         /* truncate kung sobra */
+    text-overflow: ellipsis;  /* lagyan ng "..." kung di kasya */
+    white-space: nowrap;      /* huwag mag-break sa gitna ng text */
   }
 
+  /* Report Type mas maliit pa */
+  #reportType {
+    width: 80px;
+  }
+
+  /* Disease selector mas malapad para kasya ang Teenage Pregnancy */
   #diseaseFilter {
-    width: 140px;            /* mas malapad pa rin para kasya ang Teenage Pregnancy */
+    width: 140px;
   }
 }
 
