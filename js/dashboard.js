@@ -17,11 +17,35 @@ const el = {
 // === Charts Initialization ===
 function createBarChart() {
   const ctx = document.getElementById('casesChart').getContext('2d');
-  return new Chart(ctx, { type: 'bar', data: { labels: [], datasets: [] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true } }, scales: { x: { title: { display: true, text: 'Barangays' } }, y: { title: { display: true, text: 'Cases' }, beginAtZero: true } } } });
+  return new Chart(ctx, {
+    type: 'bar',
+    data: { labels: [], datasets: [] },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: true } },
+      scales: {
+        x: { title: { display: true, text: 'Barangays' } },
+        y: { title: { display: true, text: 'Cases' }, beginAtZero: true }
+      }
+    }
+  });
 }
 function createLineChart() {
   const ctx = document.getElementById('trendChart').getContext('2d');
-  return new Chart(ctx, { type: 'line', data: { labels: [], datasets: [] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true } }, scales: { x: { title: { display: true, text: 'Month' } }, y: { title: { display: true, text: 'Total Cases' }, beginAtZero: true } } } });
+  return new Chart(ctx, {
+    type: 'line',
+    data: { labels: [], datasets: [] },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: true } },
+      scales: {
+        x: { title: { display: true, text: 'Month' } },
+        y: { title: { display: true, text: 'Total Cases' }, beginAtZero: true }
+      }
+    }
+  });
 }
 const casesChart = createBarChart();
 const trendChart = createLineChart();
@@ -31,16 +55,48 @@ const map = L.map('brgyMap').setView([12.35, 121.13], 12);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
 // === Helpers ===
-function showAlert(message) { el.alertBox.textContent = `⚠️ ${message}`; el.alertBox.style.display = "block"; }
+function showAlert(message) {
+  el.alertBox.textContent = `⚠️ ${message}`;
+  el.alertBox.style.display = "block";
+}
 function hideAlert() { el.alertBox.style.display = "none"; }
-function computeTotal(entry) { return entry.total ?? (entry.age10_14 || 0) + (entry.age15_19 || 0) + (entry.male || 0) + (entry.female || 0); }
-function resetChart(chart) { chart.data.labels = []; chart.data.datasets = []; chart.update(); }
+function computeTotal(entry) {
+  return entry.total ?? (entry.age10_14 || 0) + (entry.age15_19 || 0) + (entry.male || 0) + (entry.female || 0);
+}
+function resetChart(chart) {
+  chart.data.labels = [];
+  chart.data.datasets = [];
+  chart.update();
+}
+
+// === Reset Everything ===
 function resetStats() {
-  el.totalCases.textContent = "0"; el.diseasesTracked.textContent = "0"; el.affectedBarangays.textContent = "0"; el.lastUpdate.textContent = "-";
-  resetChart(casesChart); resetChart(trendChart);
+  // Quick stats reset
+  el.totalCases.textContent = "0";
+  el.diseasesTracked.textContent = "0";
+  el.affectedBarangays.textContent = "0";
+  el.lastUpdate.textContent = "-";
+
+  // Reset charts
+  resetChart(casesChart);
+  resetChart(trendChart);
+
+  // Reset map
   map.eachLayer(layer => { if (!(layer instanceof L.TileLayer)) map.removeLayer(layer); });
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+  // Reset table
   el.tableBody.innerHTML = "";
+
+  // 👉 Section titles show “No data available”
+  document.querySelector("#recentCases .section-title").textContent = "Recent Cases – No data available";
+  document.querySelector("#charts .section-title").textContent = "Cases Overview – No data available";
+  document.querySelector("#mapSection .section-title").textContent = "Cases Map – No data available";
+  document.querySelector("#trend .section-title").textContent = "Yearly Overview – No data available";
+
+  // Reset legend
+  el.legend.style.display = "none";
+  el.legend.innerHTML = "";
 }
 
 // === GeoJSON Cache ===
@@ -53,7 +109,7 @@ async function getGeoData() {
   return geoCache;
 }
 
-// === Generic Chart Updater ===
+// === Chart Updaters ===
 function updateChart(chart, { labels, datasets, xTitle, yTitle }) {
   chart.data.labels = labels;
   chart.data.datasets = datasets;
@@ -62,7 +118,6 @@ function updateChart(chart, { labels, datasets, xTitle, yTitle }) {
   chart.update();
 }
 
-// === BarChart ===
 function updateBarChart(stats, disease, formattedLabel) {
   const labels = stats.map(s => s.barangay);
   let datasets = [];
@@ -90,10 +145,9 @@ function updateBarChart(stats, disease, formattedLabel) {
     yTitle: `Cases – ${formattedLabel}`
   });
 
-  // 👉 Custom ticks para hindi mag-skip ng labels
   casesChart.options.scales.x.ticks = {
-    autoSkip: false,   // lahat ng barangay ipapakita
-    maxRotation: 90,   // rotate para magkasya
+    autoSkip: false,
+    maxRotation: 90,
     minRotation: 45,
     font: ctx => {
       const w = window.innerWidth;
@@ -106,7 +160,6 @@ function updateBarChart(stats, disease, formattedLabel) {
   casesChart.update();
 }
 
-// === Line Chart Update ===
 async function updateLineChart(type, year, disease) {
   if (type === "monthly") {
     const monthNamesShort = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
@@ -117,6 +170,7 @@ async function updateLineChart(type, year, disease) {
         .catch(() => null);
     });
     const results = await Promise.all(requests);
+
     const monthlyTotals = results.map(data => {
       const monthStats = data?.[disease];
       return Array.isArray(monthStats)
@@ -162,10 +216,10 @@ async function updateLineChart(type, year, disease) {
     });
   }
 
-  // 👉 Legend customization: line style instead of square
+  // 👉 Legend customization
   trendChart.options.plugins.legend.labels = {
     usePointStyle: true,
-    pointStyle: 'line',   // short line marker
+    pointStyle: 'line',
     boxWidth: 30,
     boxHeight: 4
   };
@@ -176,9 +230,7 @@ async function updateLineChart(type, year, disease) {
 // === Map + Table Rendering ===
 async function renderMapAndTable(stats, disease, formattedLabel) {
   try {
-    // Clear old layers except base tiles
     map.eachLayer(layer => { if (!(layer instanceof L.TileLayer)) map.removeLayer(layer); });
-
     const geoData = await getGeoData();
     if (!geoData) {
       console.warn("Barangay map file not found, showing table only");
@@ -300,7 +352,7 @@ async function loadData(year, month, disease, type = "monthly") {
   } catch (err) {
     console.error("Data load error:", err);
     showAlert(err.message || "Error loading data");
-    resetStats();
+    resetStats(); // 👉 lahat ng titles, charts, map, table cleared dito
   }
 }
 
