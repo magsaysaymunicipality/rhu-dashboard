@@ -184,13 +184,20 @@ footer {
 
 /* === Scroll to Top Button === */
 .scroll-top {
-  position: fixed; bottom: 20px; right: 20px;
-  background-color: #2196f3; color: #fff;
-  border: none; padding: 10px 15px; border-radius: 5px;
-  cursor: pointer; font-size: 0.9rem;
+  position: fixed;
+  bottom: 20px; right: 20px;
+  background: #2196f3;
+  color: #fff;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9rem;
   box-shadow: 0 2px 6px rgba(0,0,0,0.3);
   display: none;
+  z-index: 1600;
 }
+.scroll-top.show { display: block; }
 .scroll-top:hover { background-color: #1976d2; }
 
 .leaflet-interactive { pointer-events: visiblePainted; }
