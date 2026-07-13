@@ -25,18 +25,18 @@ header {
 .tagline { font-weight: bold; font-size: 1rem; }
 
 /* === Layout === */
-main { padding: 20px; font-size: 1rem; }
+main { padding: 15px; font-size: 1rem; }
 .dashboard-section {
-  margin-bottom: 40px;
+  margin-bottom: 30px;
   background: #fff;
-  padding: 20px;
+  padding: 15px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 .section-title {
   text-align: center;
   margin-bottom: 10px;
-  font-size: 1.4rem;
+  font-size: 1rem;
   color: #333;
   font-weight: bold;
 }
@@ -62,7 +62,7 @@ main { padding: 20px; font-size: 1rem; }
 .filters {
   display: flex;
   flex-direction: row;   /* ✅ row layout */
-  gap: 20px;             /* space between groups */
+  gap: 15px;             /* space between groups */
   justify-content: center;
   align-items: center;
   flex-wrap: wrap;       /* para safe kung sobrang sikip */
@@ -71,7 +71,7 @@ main { padding: 20px; font-size: 1rem; }
 .filter-row {
   display: flex;
   flex-direction: row;   /* ✅ row layout */
-  gap: 20px;
+  gap: 15px;
   align-items: center;
 }
 
@@ -237,7 +237,7 @@ nav a:hover, nav a.active { background: #e0f2f1; }
 
 @media (max-width: 768px) {
   body { font-size: 0.85rem; }
-  .section-title { font-size: 1.1rem; }
+  .section-title { font-size: 1rem; }
   nav { gap: 6px; font-size: 0.75rem; }
   .chart-wrapper { height: 280px; }
   footer { padding: 6px; font-size: 0.8rem; }
@@ -277,9 +277,10 @@ nav a:hover, nav a.active { background: #e0f2f1; }
 }
 
 @media (max-width: 480px) {
-  body { font-size: 0.85rem; }
-  .section-title { font-size: 1.1rem; }
-  nav { gap: 6px; font-size: 0.75rem; }
+  body { font-size: 0.8rem; }
+  .tagline { font-size: 0.85rem; }
+  .section-title { font-size: 1rem; }
+  nav { gap: 6px; font-size: 0.7rem; }
   .chart-wrapper { height: 280px; }
   footer { padding: 6px; font-size: 0.8rem; }
   table { font-size: 0.8rem; }
