@@ -279,9 +279,10 @@ nav a:hover, nav a.active { background: #e0f2f1; }
 @media (max-width: 480px) {
   body { font-size: 0.8rem; }
   .tagline { font-size: 0.85rem; }
-  .section-title { font-size: 1rem; }
-  #alertBox { font-size: 0.7rem; }
   nav { gap: 6px; font-size: 0.7rem; }
+  #alertBox { font-size: 0.7rem; }
+  .section-title { font-size: 1rem; }
+  .card { font-size: 0.75rem; }
   .chart-wrapper { height: 280px; }
   footer { padding: 6px; font-size: 0.8rem; }
   table { font-size: 0.8rem; }
