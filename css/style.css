@@ -147,7 +147,6 @@ footer {
   background: #004d40;
   color: #fff;
   text-align: center;
-  padding: 12px;
   font-size: 0.9rem;
   font-weight: 500;
   border-top: 2px solid #00695c;
@@ -281,10 +280,10 @@ nav a:hover, nav a.active { background: #e0f2f1; }
   .tagline { font-size: 0.85rem; }
   nav { gap: 6px; font-size: 0.7rem; }
   #alertBox { font-size: 0.7rem; }
-  .section-title { font-size: 1rem; }
+  .section-title { font-size: 1rem; margin-top: 0; }
   .card { font-size: 0.75rem; }
   .chart-wrapper { height: 280px; }
-  footer { padding: 6px; font-size: 0.8rem; }
+  footer { font-size: 0.7rem; padding: 4px; }
   table { font-size: 0.8rem; }
 
   /* Filters row: payagan mag-wrap kung di kasya */
