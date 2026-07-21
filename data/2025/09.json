@@ -1,1 +1,30 @@
-[]
+{
+  "Type II Diabetes Mellitus": [
+    { "barangay": "Alibog", "male": 0, "female": 0 },
+    { "barangay": "Caguray", "male": 0, "female": 0 },
+    { "barangay": "Calawag", "male": 0, "female": 0 },
+    { "barangay": "Gapasan", "male": 0, "female": 0 },
+    { "barangay": "Laste", "male": 0, "female": 0 },
+    { "barangay": "Lourdes", "male": 0, "female": 0 },
+    { "barangay": "Nicolas", "male": 0, "female": 1 },
+    { "barangay": "Paclolo", "male": 0, "female": 0 },
+    { "barangay": "Poblacion", "male": 0, "female": 0 },
+    { "barangay": "Purnaga", "male": 0, "female": 0 },
+    { "barangay": "Sta. Teresa", "male": 0, "female": 0 },
+    { "barangay": "Sibalat", "male": 0, "female": 0 }
+  ],
+  "Hypertensive Adults": [
+    { "barangay": "Alibog", "male": 0, "female": 0 },
+    { "barangay": "Caguray", "male": 0, "female": 0 },
+    { "barangay": "Calawag", "male": 0, "female": 2 },
+    { "barangay": "Gapasan", "male": 0, "female": 0 },
+    { "barangay": "Laste", "male": 0, "female": 0 },
+    { "barangay": "Lourdes", "male": 0, "female": 0 },
+    { "barangay": "Nicolas", "male": 2, "female": 5 },
+    { "barangay": "Paclolo", "male": 0, "female": 0 },
+    { "barangay": "Poblacion", "male": 0, "female": 2 },
+    { "barangay": "Purnaga", "male": 0, "female": 0 },
+    { "barangay": "Sta. Teresa", "male": 0, "female": 0 },
+    { "barangay": "Sibalat", "male": 0, "female": 0 }
+  ]
+}

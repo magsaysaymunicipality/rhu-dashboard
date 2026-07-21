@@ -13,7 +13,7 @@
     { "barangay": "Sta. Teresa", "age10_14": 0, "age15_19": 10 },
     { "barangay": "Sibalat", "age10_14": 0, "age15_19": 3 }
   ],
-  "Type II Diabetes": [
+  "Type II Diabetes Mellitus": [
     { "barangay": "Alibog", "male": 2, "female": 14 },
     { "barangay": "Caguray", "male": 17, "female": 21 },
     { "barangay": "Calawag", "male": 4, "female": 8 },
@@ -27,7 +27,7 @@
     { "barangay": "Sta. Teresa", "male": 3, "female": 4 },
     { "barangay": "Sibalat", "male": 5, "female": 9 }
   ],
-  "Hypertension": [
+  "Hypertensive Adults": [
     { "barangay": "Alibog", "male": 27, "female": 74 },
     { "barangay": "Caguray", "male": 102, "female": 118 },
     { "barangay": "Calawag", "male": 35, "female": 45 },
