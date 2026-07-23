@@ -278,12 +278,22 @@ async function renderMapAndTable(stats, disease, formattedLabel) {
         fillOpacity: 0.7
       }).addTo(map);
 
-      L.marker(center).addTo(map).bindPopup(`
-        <b>${s.barangay}</b><br>
-        Disease/Issue: ${disease}<br>
-        Total: ${total}<br>
-        <i>Reported: ${formattedLabel}</i>
-      `);
+      // 👉 Dynamic popup content
+      let popupContent = `<b>${s.barangay}</b><br>
+      Disease/Issue: ${disease}<br>`;
+
+      if (s.age10_14 !== undefined || s.age15_19 !== undefined) {
+        popupContent += `Age 10–14: ${s.age10_14 || 0}<br>
+                         Age 15–19: ${s.age15_19 || 0}<br>`;
+      } else if (s.male !== undefined || s.female !== undefined) {
+        popupContent += `Male: ${s.male || 0}<br>
+                         Female: ${s.female || 0}<br>`;
+      }
+
+      popupContent += `Total: ${total}<br>
+      <i>Reported: ${formattedLabel}</i>`;
+
+      L.marker(center).addTo(map).bindPopup(popupContent);
     });
 
     if (heatPoints.length > 0) {
