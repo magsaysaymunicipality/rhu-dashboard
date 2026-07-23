@@ -309,7 +309,7 @@ async function renderMapAndTable(stats, disease, formattedLabel) {
           const geoName = normalize(layer.feature.properties.Name);
           if (geoName === statName || geoName.includes(statName) || statName.includes(geoName)) {
             layer.setStyle({ color: "red", weight: 3, fillOpacity: 0.4 });
-            map.fitBounds(layer.getBounds());
+            map.setView(center, 12);
           } else {
             geoLayer.resetStyle(layer);
           }
