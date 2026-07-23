@@ -252,53 +252,70 @@ function renderTable(stats, disease, formattedLabel) {
 // === Map + Table Rendering ===
 async function renderMapAndTable(stats, disease, formattedLabel) {
   try {
+    // Clear non-tile layers
     map.eachLayer(layer => { if (!(layer instanceof L.TileLayer)) map.removeLayer(layer); });
+
+    // Load GeoJSON boundaries
     const geoData = await getGeoData();
     if (!geoData) { renderTable(stats, disease, formattedLabel); return; }
 
-    const geoLayer = L.geoJSON(geoData).addTo(map);
-    const heatPoints = [];
+    const geoLayer = L.geoJSON(geoData, {
+      style: { color: "blue", weight: 2, fillOpacity: 0.1 }
+    }).addTo(map);
+
+    // Normalize helper (safe)
+    const normalize = str => (str || "")
+      .replace(/^Brgy\.?\s*/i, "")
+      .replace(/^Barangay\s*/i, "")
+      .replace(/^Sta\.?\s*/i, "Santa ")
+      .trim()
+      .toLowerCase();
 
     stats.forEach(s => {
-      const normalize = str => str.replace(/^Brgy\.?\s*/i, "").trim().toLowerCase();
-      const feature = geoLayer.getLayers().find(l => normalize(l.feature.properties.name) === normalize(s.barangay));
-      if (!feature) return;
+      const statName = normalize(s.barangay);
 
+      // Find matching GeoJSON feature
+      const feature = geoLayer.getLayers().find(l => {
+        const geoName = normalize(l.feature.properties.Name); // capital N
+        return geoName === statName || geoName.includes(statName) || statName.includes(geoName);
+      });
+
+      if (!feature) {
+        console.warn("No match for:", s.barangay);
+        return;
+      }
+
+      // Get center of feature
       const center = feature.feature.geometry.type === "Point"
         ? L.latLng(feature.feature.geometry.coordinates[1], feature.feature.geometry.coordinates[0])
         : feature.getBounds().getCenter();
 
       const total = computeTotal(s);
-      heatPoints.push([center.lat, center.lng, total]);
 
-      L.circleMarker(center, {
-        radius: total >= 30 ? 25 : total >= 20 ? 20 : total >= 10 ? 15 : 8,
-        color: "purple",
-        fillColor: "violet",
-        fillOpacity: 0.7
-      }).addTo(map);
+      // 👉 Plain marker with popup + highlight effect
+      const popupContent = `
+        <b>${s.barangay}</b><br>
+        Disease/Issue: ${disease}<br>
+        ${s.age10_14 !== undefined ? "Age 10–14: " + (s.age10_14 || 0) + "<br>" : ""}
+        ${s.age15_19 !== undefined ? "Age 15–19: " + (s.age15_19 || 0) + "<br>" : ""}
+        ${s.male !== undefined ? "Male: " + (s.male || 0) + "<br>" : ""}
+        ${s.female !== undefined ? "Female: " + (s.female || 0) + "<br>" : ""}
+        Total: ${total}<br>
+        <i>Reported: ${formattedLabel}</i>
+      `;
 
-      // 👉 Dynamic popup content
-      let popupContent = `<b>${s.barangay}</b><br>
-      Disease/Issue: ${disease}<br>`;
-
-      if (s.age10_14 !== undefined || s.age15_19 !== undefined) {
-        popupContent += `Age 10–14: ${s.age10_14 || 0}<br>
-                         Age 15–19: ${s.age15_19 || 0}<br>`;
-      } else if (s.male !== undefined || s.female !== undefined) {
-        popupContent += `Male: ${s.male || 0}<br>
-                         Female: ${s.female || 0}<br>`;
-      }
-
-      popupContent += `Total: ${total}<br>
-      <i>Reported: ${formattedLabel}</i>`;
-
-      L.marker(center).addTo(map).bindPopup(popupContent);
+      L.marker(center).addTo(map).bindPopup(popupContent).on("click", () => {
+        geoLayer.eachLayer(layer => {
+          const geoName = normalize(layer.feature.properties.Name);
+          if (geoName === statName || geoName.includes(statName) || statName.includes(geoName)) {
+            layer.setStyle({ color: "red", weight: 3, fillOpacity: 0.4 });
+            map.fitBounds(layer.getBounds());
+          } else {
+            geoLayer.resetStyle(layer);
+          }
+        });
+      });
     });
-
-    if (heatPoints.length > 0) {
-      L.heatLayer(heatPoints, { radius: 20, blur: 10, maxZoom: 17 }).addTo(map);
-    }
 
     renderTable(stats, disease, formattedLabel);
   } catch (err) {
