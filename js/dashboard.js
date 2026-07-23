@@ -164,34 +164,39 @@ function updateBarChart(stats, disease, formattedLabel) {
 
 // === Line Chart Updater ===
 async function updateLineChart(type, year, disease, month = null) {
-  if (type === "monthly" && month) {
+  if (type === "monthly") {
+    // 👉 Show full year comparison by month
     const monthNamesShort = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-    const monthIndex = parseInt(month, 10) - 1;
-    const path = `./data/${year}/${month}.json`;
+    const monthlyTotals = [];
 
-    try {
-      const resp = await fetch(path);
-      if (!resp.ok) throw new Error(`Stats file not found: ${path}`);
-      const data = await resp.json();
-      const key = DISEASE_MAP[disease] || disease;
-      const monthStats = data?.[key];
-      const total = Array.isArray(monthStats)
-        ? monthStats.reduce((sum, s) => sum + computeTotal(s), 0)
-        : 0;
-
-      updateChart(trendChart, {
-        labels: [monthNamesShort[monthIndex]],
-        datasets: [
-          { label: `${disease} Cases – ${year}`, data: [total], borderColor: "#ff5722", fill: false }
-        ],
-        yTitle: `Total Cases – ${year}`
-      });
-    } catch (err) {
-      console.error("Monthly chart error:", err);
-      updateChart(trendChart, { labels: [], datasets: [] });
+    for (let m = 1; m <= 12; m++) {
+      const mm = String(m).padStart(2, "0");
+      const path = `./data/${year}/${mm}.json`;
+      try {
+        const resp = await fetch(path);
+        if (!resp.ok) { monthlyTotals.push(0); continue; }
+        const data = await resp.json();
+        const key = DISEASE_MAP[disease] || disease;
+        const monthStats = data?.[key];
+        const total = Array.isArray(monthStats)
+          ? monthStats.reduce((sum, s) => sum + computeTotal(s), 0)
+          : 0;
+        monthlyTotals.push(total);
+      } catch {
+        monthlyTotals.push(0);
+      }
     }
 
+    updateChart(trendChart, {
+      labels: monthNamesShort,
+      datasets: [
+        { label: `${disease} Cases – ${year}`, data: monthlyTotals, borderColor: "#ff5722", fill: false }
+      ],
+      yTitle: `Total Cases – ${year}`
+    });
+
   } else {
+    // 👉 Annual comparison (unchanged)
     const selectedYear = parseInt(year, 10);
     const yearsToCompare = [];
     if (selectedYear > 2020) yearsToCompare.push(selectedYear - 1);
