@@ -199,7 +199,7 @@ async function updateLineChart(type, year, disease, month = null) {
     // 👉 Annual comparison (unchanged)
     const selectedYear = parseInt(year, 10);
     const yearsToCompare = [];
-    if (selectedYear > 2020) yearsToCompare.push(selectedYear - 1);
+    if (selectedYear > 2025) yearsToCompare.push(selectedYear - 1);
     yearsToCompare.push(selectedYear);
     if (selectedYear < 2030) yearsToCompare.push(selectedYear + 1);
 
@@ -260,7 +260,7 @@ async function renderMapAndTable(stats, disease, formattedLabel) {
     if (!geoData) { renderTable(stats, disease, formattedLabel); return; }
 
     const geoLayer = L.geoJSON(geoData, {
-      style: { color: "blue", weight: 2, fillOpacity: 0.1 }
+     style: () => ({ color: "blue", weight: 2, fillOpacity: 0.1 })
     }).addTo(map);
 
     // Normalize helper (safe)
@@ -304,17 +304,17 @@ async function renderMapAndTable(stats, disease, formattedLabel) {
         <i>Reported: ${formattedLabel}</i>
       `;
 
-      L.marker(center).addTo(map).bindPopup(popupContent).on("click", () => {
-        geoLayer.eachLayer(layer => {
-          const geoName = normalize(layer.feature.properties.Name);
-          if (geoName === statName || geoName.includes(statName) || statName.includes(geoName)) {
-            layer.setStyle({ color: "red", weight: 3, fillOpacity: 0.4 });
-            map.setView(center, 12);
-          } else {
-            geoLayer.resetStyle(layer);
-          }
-        });
-      });
+L.marker(center).addTo(map).bindPopup(popupContent).on("click", () => {
+  geoLayer.eachLayer(layer => {
+    const geoName = normalize(layer.feature.properties.Name);
+    if (geoName === statName || geoName.includes(statName) || statName.includes(geoName)) {
+      layer.setStyle({ color: "red", weight: 3, fillOpacity: 0.4 });
+      map.setView(center, 12);
+    } else {
+      layer.setStyle({ color: "blue", weight: 2, fillOpacity: 0.1 }); // force reset
+    }
+  });
+});
     });
 
     renderTable(stats, disease, formattedLabel);
