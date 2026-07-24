@@ -279,15 +279,14 @@ async function renderMapAndTable(stats, disease, formattedLabel) {
 
 popupControl.update = function(content) {
   if (content) {
-    // kung may bagong content, fade out muna yung luma
     this._div.classList.add('hide');
     setTimeout(() => {
       this._div.innerHTML = content;
       this._div.classList.remove('hide');
-    }, 1500); // duration ng fade-out (1.5s)
+    }, 1000); 
   } else {
     this._div.classList.add('hide');
-    setTimeout(() => { this._div.innerHTML = ''; }, 1500);
+    setTimeout(() => { this._div.innerHTML = ''; }, 1000);
   }
 };
       popupControl.addTo(map);
