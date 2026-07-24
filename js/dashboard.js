@@ -252,18 +252,15 @@ function renderTable(stats, disease, formattedLabel) {
 // === Map + Table Rendering ===
 async function renderMapAndTable(stats, disease, formattedLabel) {
   try {
-    // Clear non-tile layers
     map.eachLayer(layer => { if (!(layer instanceof L.TileLayer)) map.removeLayer(layer); });
 
-    // Load GeoJSON boundaries
     const geoData = await getGeoData();
     if (!geoData) { renderTable(stats, disease, formattedLabel); return; }
 
     const geoLayer = L.geoJSON(geoData, {
-     style: () => ({ color: "blue", weight: 2, fillOpacity: 0.1 })
+      style: () => ({ color: "blue", weight: 2, fillOpacity: 0.1 })
     }).addTo(map);
 
-    // Normalize helper (safe)
     const normalize = str => (str || "")
       .replace(/^Brgy\.?\s*/i, "")
       .replace(/^Barangay\s*/i, "")
@@ -271,12 +268,40 @@ async function renderMapAndTable(stats, disease, formattedLabel) {
       .trim()
       .toLowerCase();
 
+    // 👉 Create popup control once (upper-right corner)
+    if (!map._popupControl) {
+      const popupControl = L.control({ position: 'topright' });
+      popupControl.onAdd = function(map) {
+        this._div = L.DomUtil.create('div', 'custom-popup');
+        this.update();
+        return this._div;
+      };
+
+popupControl.update = function(content) {
+  if (content) {
+    // kung may bagong content, fade out muna yung luma
+    this._div.classList.add('hide');
+    setTimeout(() => {
+      this._div.innerHTML = content;
+      this._div.classList.remove('hide');
+    }, 1500); // duration ng fade-out (1.5s)
+  } else {
+    this._div.classList.add('hide');
+    setTimeout(() => { this._div.innerHTML = ''; }, 1500);
+  }
+};
+      popupControl.addTo(map);
+      map._popupControl = popupControl;
+    }
+
+    // Clear overlay when new disease is loaded
+    map._popupControl.update("");
+
     stats.forEach(s => {
       const statName = normalize(s.barangay);
 
-      // Find matching GeoJSON feature
       const feature = geoLayer.getLayers().find(l => {
-        const geoName = normalize(l.feature.properties.Name); // capital N
+        const geoName = normalize(l.feature.properties.Name);
         return geoName === statName || geoName.includes(statName) || statName.includes(geoName);
       });
 
@@ -285,14 +310,12 @@ async function renderMapAndTable(stats, disease, formattedLabel) {
         return;
       }
 
-      // Get center of feature
       const center = feature.feature.geometry.type === "Point"
         ? L.latLng(feature.feature.geometry.coordinates[1], feature.feature.geometry.coordinates[0])
         : feature.getBounds().getCenter();
 
       const total = computeTotal(s);
 
-      // 👉 Plain marker with popup + highlight effect
       const popupContent = `
         <b>${s.barangay}</b><br>
         Disease/Issue: ${disease}<br>
@@ -304,17 +327,22 @@ async function renderMapAndTable(stats, disease, formattedLabel) {
         <i>Reported: ${formattedLabel}</i>
       `;
 
-L.marker(center).addTo(map).bindPopup(popupContent).on("click", () => {
-  geoLayer.eachLayer(layer => {
-    const geoName = normalize(layer.feature.properties.Name);
-    if (geoName === statName || geoName.includes(statName) || statName.includes(geoName)) {
-      layer.setStyle({ color: "red", weight: 3, fillOpacity: 0.4 });
-      map.setView(center, 12);
-    } else {
-      layer.setStyle({ color: "blue", weight: 2, fillOpacity: 0.1 }); // force reset
-    }
-  });
-});
+      L.marker(center).addTo(map).on("click", () => {
+        // highlight barangay polygon
+        geoLayer.eachLayer(layer => {
+          const geoName = normalize(layer.feature.properties.Name);
+          if (geoName === statName || geoName.includes(statName) || statName.includes(geoName)) {
+            layer.setStyle({ color: "red", weight: 3, fillOpacity: 0.4 });
+            map.fitBounds(layer.getBounds());
+          } else {
+            layer.setStyle({ color: "blue", weight: 2, fillOpacity: 0.1 });
+          }
+        });
+
+        // 👉 Reset overlay content before showing new one
+        map._popupControl.update("");
+        map._popupControl.update(popupContent);
+      });
     });
 
     renderTable(stats, disease, formattedLabel);

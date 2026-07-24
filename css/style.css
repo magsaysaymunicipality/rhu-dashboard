@@ -120,6 +120,34 @@ main { padding: 15px; font-size: 1rem; }
   font-size: 1rem;
 }
 
+.custom-popup {
+  background: rgba(0, 0, 0, 0.6); /* semi-transparent background */
+  color: #fff;
+  padding: 10px;
+  border-radius: 6px;
+  font-size: 16px;
+  max-width: 260px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+  list-style: none;
+  
+  /* visible by default */
+  opacity: 1;
+  transform: none;
+  transition: opacity 1s ease, transform 1.5s ease;
+}
+
+.custom-popup.hide {
+  opacity: 0;              /* fade out */
+  transform: translateY(-10px);
+}
+
+.custom-popup ul,
+.custom-popup li {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
 /* === Table === */
 .table-wrapper { overflow-x: auto; }
 table {
@@ -285,7 +313,7 @@ nav a:hover, nav a.active { background: #e0f2f1; }
   .chart-wrapper { height: 280px; }
   footer { font-size: 0.7rem; padding: 4px; }
   table { font-size: 0.8rem; }
-
+ .custom-popup { font-size: 12px; max-width: 240px; }
   /* Filters row: payagan mag-wrap kung di kasya */
   .filter-row {
     flex-direction: row;
